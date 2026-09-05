@@ -43,7 +43,8 @@ class GeneralSection(BaseSection):
         )
 
     def has_modifications(self) -> bool:
-        return any(slider.value != slider._default_float for slider in self._sliders.values())
+        return any(abs(slider.value - getattr(slider, "default_val", slider._default_float)) > 0.001 
+                   for slider in self._sliders.values())
 
     def reset_adjustments(self) -> None:
         for slider in self._sliders.values():

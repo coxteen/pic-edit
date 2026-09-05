@@ -5,9 +5,10 @@ from PySide6.QtWidgets import QFrame, QScrollArea, QStackedWidget, QVBoxLayout, 
 
 from src.filters.base import ImageFilter
 from src.widgets.base_section import BaseSection
+from src.widgets.color_section import ColorSection
+from src.widgets.crop_section import CropSection
 from src.widgets.curves_section import CurvesSection
 from src.widgets.general_section import GeneralSection
-from src.widgets.crop_section import CropSection
 
 
 class Sidebar(QWidget):
@@ -27,7 +28,7 @@ class Sidebar(QWidget):
 
         self.stack = QStackedWidget(self)
 
-        # Tab 0: Develop Panel (Scrollable General + Curves)
+        # --- Tab 0: Develop Panel (General + Color + Curves) ---
         develop_scroll = QScrollArea(self)
         develop_scroll.setWidgetResizable(True)
         develop_scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -39,8 +40,13 @@ class Sidebar(QWidget):
         develop_layout.setSpacing(10)
 
         self.general_section = GeneralSection(self)
+        self.color_section = ColorSection(self)
         self.curves_section = CurvesSection(self)
-        self.develop_sections: List[BaseSection] = [self.general_section, self.curves_section]
+        self.develop_sections: List[BaseSection] = [
+            self.general_section,
+            self.color_section,
+            self.curves_section,
+        ]
 
         for section in self.develop_sections:
             section.adjustmentsChanged.connect(self.adjustmentsChanged.emit)
@@ -50,7 +56,7 @@ class Sidebar(QWidget):
         develop_scroll.setWidget(develop_container)
         self.stack.addWidget(develop_scroll)
 
-        # Tab 1: Crop Panel (Scrollable)
+        # --- Tab 1: Crop Panel ---
         crop_scroll = QScrollArea(self)
         crop_scroll.setWidgetResizable(True)
         crop_scroll.setFrameShape(QFrame.Shape.NoFrame)

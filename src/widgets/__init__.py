@@ -6,6 +6,7 @@ from src.widgets.general_section import GeneralSection
 from src.widgets.image_canvas import ImageCanvas
 from src.widgets.labeled_slider import LabeledSlider
 from src.widgets.sidebar import Sidebar
+from src.widgets.color_section import ColorSection
 
 __all__ = [
     "ActivityBar",
@@ -16,4 +17,5 @@ __all__ = [
     "ImageCanvas",
     "LabeledSlider",
     "Sidebar",
+    "ColorSection"
 ]

@@ -20,13 +20,11 @@ class EditorController(QObject):
         self.sidebar = sidebar
         self._parent_widget = parent
 
-        # 60 FPS Throttling Timer
         self._render_timer = QTimer(self)
         self._render_timer.setSingleShot(True)
         self._render_timer.setInterval(16)
         self._render_timer.timeout.connect(self.execute_pipeline_update)
 
-        # Wire up sidebar signals
         self.sidebar.adjustmentsChanged.connect(self.schedule_render)
 
         self.canvas.cropBoxChanged.connect(self._on_crop_box_changed)
@@ -35,7 +33,6 @@ class EditorController(QObject):
     def _on_crop_box_changed(self) -> None:
         rect = self.canvas.get_crop_rect()
         self.sidebar.crop_section.set_crop_rect(rect)
-        # No physical render slice needed while dragging inside crop tab
 
     def schedule_render(self) -> None:
         if self.engine.has_image and not self._render_timer.isActive():
@@ -88,43 +85,35 @@ class EditorController(QObject):
 
     def set_workspace_tab(self, index: int) -> None:
         """Called when user switches tabs on the ActivityBar."""
-        # 1. If we were in Crop tab (index 1), grab the latest crop rectangle from canvas
         if self.sidebar.stack.currentIndex() == 1:
             current_crop = self.canvas.get_crop_rect()
             self.sidebar.crop_section.set_crop_rect(current_crop)
 
-        # 2. Switch tab in UI
         self.sidebar.set_current_tab(index)
         is_crop_tab = (index == 1)
 
-        # 3. Notify crop section
         self.sidebar.crop_section.set_workspace_active(is_crop_tab)
 
-        # 4. Toggle canvas interactive overlay
         self.canvas.set_crop_mode(
             enabled=is_crop_tab,
             aspect_ratio=self.sidebar.crop_section._active_ratio
         )
 
-        # 5. Trigger immediate pipeline re-render (commits or uncommits the physical crop)
         self.execute_pipeline_update()
 
     def export_image(self) -> None:
         if not self.engine.has_image:
             return
 
-        # Ensure latest crop rectangle is saved if user exports directly while inside Crop tab
         if self.sidebar.stack.currentIndex() == 1:
             self.sidebar.crop_section.set_crop_rect(self.canvas.get_crop_rect())
 
-        # Ensure crop section is set to export mode (applies physical crop slice)
         self.sidebar.crop_section._is_active_workspace = False
 
         save_path = DialogService.save_jpeg_file(self._parent_widget)
         if not save_path:
             return
 
-        # Collect full active pipeline (Tone adjustments + Curves + Geometry)
         active_filters = self.sidebar.get_active_filters()
         self.engine._filters = active_filters
 

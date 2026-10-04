@@ -18,23 +18,18 @@ def _crop_largest_inner_rect(image: np.ndarray, angle_deg: float) -> np.ndarray:
     sin_a = math.sin(angle_rad)
     cos_a = math.cos(angle_rad)
 
-    # Denominator for the two bounding constraints
     denom = w * sin_a + h * cos_a
     denom_inv = w * cos_a + h * sin_a
 
-    # Calculate max possible width bounded by both rotated coordinate axes
     bound_1 = (w * w) / denom_inv
     bound_2 = (w * h) / denom
     max_w = min(bound_1, bound_2)
 
-    # Keep exact original aspect ratio
     max_h = max_w * (h / float(w))
 
-    # Subtract 2 pixels safety margin to eliminate subpixel interpolation bleed
     crop_w = int(math.floor(max_w)) - 2
     crop_h = int(math.floor(max_h)) - 2
 
-    # Clamp safety bounds
     crop_w = max(2, min(w, crop_w))
     crop_h = max(2, min(h, crop_h))
 
@@ -78,7 +73,6 @@ class GeometryFilter(ImageFilter):
 
         result = image
 
-        # 1. Discrete 90-degree rotations
         if self.discrete_rotation == 90:
             result = cv2.rotate(result, cv2.ROTATE_90_CLOCKWISE)
         elif self.discrete_rotation == 180:
@@ -86,7 +80,6 @@ class GeometryFilter(ImageFilter):
         elif self.discrete_rotation == 270:
             result = cv2.rotate(result, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
-        # 2. Flips
         if self.flip_h and self.flip_v:
             result = cv2.flip(result, -1)
         elif self.flip_h:
@@ -94,7 +87,6 @@ class GeometryFilter(ImageFilter):
         elif self.flip_v:
             result = cv2.flip(result, 0)
 
-        # 3. Fine-angle rotation with guaranteed tight inner crop
         if abs(self.angle_deg) > 0.01:
             h, w = result.shape[:2]
             center = (w / 2.0, h / 2.0)
@@ -109,7 +101,6 @@ class GeometryFilter(ImageFilter):
             )
             result = _crop_largest_inner_rect(rotated, self.angle_deg)
 
-        # 4. Interactive crop rect (normalized coordinates: x, y, w, h)
         if self.crop_rect is not None:
             cx, cy, cw, ch = self.crop_rect
             img_h, img_w = result.shape[:2]
@@ -154,7 +145,6 @@ class GeometryFilter(ImageFilter):
 
         result = image
 
-        # 1. Discrete 90-degree rotations
         if self.discrete_rotation == 90:
             result = cv2.rotate(result, cv2.ROTATE_90_CLOCKWISE)
         elif self.discrete_rotation == 180:
@@ -162,7 +152,6 @@ class GeometryFilter(ImageFilter):
         elif self.discrete_rotation == 270:
             result = cv2.rotate(result, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
-        # 2. Flips
         if self.flip_h and self.flip_v:
             result = cv2.flip(result, -1)
         elif self.flip_h:
@@ -170,7 +159,6 @@ class GeometryFilter(ImageFilter):
         elif self.flip_v:
             result = cv2.flip(result, 0)
 
-        # 3. Fine-angle rotation with automatic inner crop (no black borders)
         if abs(self.angle_deg) > 0.01:
             h, w = result.shape[:2]
             center = (w / 2.0, h / 2.0)
@@ -185,7 +173,6 @@ class GeometryFilter(ImageFilter):
             )
             result = _crop_largest_inner_rect(rotated, self.angle_deg)
 
-        # 4. Interactive crop rect (normalized coordinates: x, y, w, h)
         if self.crop_rect is not None:
             cx, cy, cw, ch = self.crop_rect
             img_h, img_w = result.shape[:2]

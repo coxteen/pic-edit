@@ -49,13 +49,11 @@ class ActivityBar(QWidget):
         self.btn_group = QButtonGroup(self)
         self.btn_group.setExclusive(True)
 
-        # 1. Develop / Edit Icon
         self.edit_btn = ActivityButton("🎚", "Develop Adjustments", self)
         self.edit_btn.setChecked(True)
         self.btn_group.addButton(self.edit_btn, 0)
         layout.addWidget(self.edit_btn)
 
-        # 2. Crop & Rotate Icon
         self.crop_btn = ActivityButton("⛶", "Crop & Rotate", self)
         self.btn_group.addButton(self.crop_btn, 1)
         layout.addWidget(self.crop_btn)

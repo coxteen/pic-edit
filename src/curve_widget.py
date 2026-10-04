@@ -57,7 +57,6 @@ class CurveCanvas(QWidget):
             self.update()
             return
 
-        # Subsample and ensure contiguous memory for OpenCV calcHist
         sample = np.ascontiguousarray(image[::2, ::2])
 
         hist_data = {}
@@ -114,11 +113,9 @@ class CurveCanvas(QWidget):
         margin = 10
         rect = QRectF(margin, margin, self.width() - 2 * margin, self.height() - 2 * margin)
 
-        # Background
         painter.fillRect(self.rect(), QColor("#1c1c1c"))
         painter.fillRect(rect, QColor("#121212"))
 
-        # Grid lines
         grid_pen = QPen(QColor("#2c2c2c"), 1, Qt.PenStyle.DashLine)
         painter.setPen(grid_pen)
         for i in range(1, 4):
@@ -127,11 +124,9 @@ class CurveCanvas(QWidget):
             painter.drawLine(QPointF(x, rect.top()), QPointF(x, rect.bottom()))
             painter.drawLine(QPointF(rect.left(), y), QPointF(rect.right(), y))
 
-        # Baseline
         painter.setPen(QPen(QColor("#383838"), 1, Qt.PenStyle.SolidLine))
         painter.drawLine(rect.bottomLeft(), rect.topRight())
 
-        # Histogram
         if self._histogram_data and self._active_channel in self._histogram_data:
             hist = self._histogram_data[self._active_channel]
             color = self.CHANNEL_COLORS[self._active_channel]
@@ -149,7 +144,6 @@ class CurveCanvas(QWidget):
             hist_path.closeSubpath()
             painter.drawPath(hist_path)
 
-        # Render Smooth/Linear Curve
         active_color = self.CHANNEL_COLORS[self._active_channel]
         pts = self._points[self._active_channel]
         samples = 128
@@ -166,7 +160,6 @@ class CurveCanvas(QWidget):
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawPath(curve_path)
 
-        # Control Points
         for idx, pt in enumerate(pts):
             screen_pt = self._to_screen_coords(pt, rect)
             is_selected = idx == self._selected_pt_idx
@@ -175,7 +168,6 @@ class CurveCanvas(QWidget):
             painter.setBrush(QBrush(active_color if is_selected else QColor("#1e1e1e")))
             painter.drawEllipse(screen_pt, 4.5, 4.5)
 
-        # Outer border
         painter.setPen(QPen(QColor("#3c3c3c"), 1))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(rect)
@@ -248,7 +240,6 @@ class CurveEditorWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(8)
 
-        # 1. Channel Selector Buttons (RGB, R, G, B)
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(4)
         self.btn_group = QButtonGroup(self)
@@ -282,12 +273,10 @@ class CurveEditorWidget(QWidget):
 
         layout.addLayout(btn_layout)
 
-        # 2. Canvas
         self.canvas = CurveCanvas(self)
         self.canvas.curveChanged.connect(self.curveChanged.emit)
         layout.addWidget(self.canvas)
 
-        # 3. Interpolation Mode Toggle (Smooth / Linear)
         mode_layout = QHBoxLayout()
         mode_layout.setSpacing(4)
         self.mode_group = QButtonGroup(self)

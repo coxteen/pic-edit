@@ -38,7 +38,6 @@ class RawLoader:
                     use_camera_wb=True
                 )
 
-                # Downscale preview buffer for ultra-fast slider response
                 if max_preview_dim is not None and rgb_image is not None:
                     h, w = rgb_image.shape[:2]
                     longest_side = max(h, w)
@@ -47,7 +46,6 @@ class RawLoader:
                         scale = max_preview_dim / float(longest_side)
                         new_w = int(w * scale)
                         new_h = int(h * scale)
-                        # INTER_AREA is optimal for high-quality downsampling
                         rgb_image = cv2.resize(rgb_image, (new_w, new_h), interpolation=cv2.INTER_AREA)
                         logging.info("Downscaled preview buffer to: %sx%s", new_w, new_h)
 

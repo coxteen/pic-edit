@@ -32,8 +32,8 @@ class CropOverlayItem(QGraphicsItem):
         super().__init__(parent)
         self.setAcceptHoverEvents(True)
         self._image_rect = QRectF(0, 0, 0, 0)
-        self._crop_rect = QRectF(0, 0, 0, 0)  # Pixel coords relative to image
-        self._aspect_ratio: Optional[float] = None  # width / height
+        self._crop_rect = QRectF(0, 0, 0, 0)
+        self._aspect_ratio: Optional[float] = None
 
         self._active_handle = self.HANDLE_NONE
         self._drag_start_pos = QPointF()
@@ -111,7 +111,6 @@ class CropOverlayItem(QGraphicsItem):
         if not cr.isValid():
             return self.HANDLE_NONE
 
-        # Corner handles
         if QRectF(cr.left() - hs, cr.top() - hs, 2 * hs, 2 * hs).contains(pos):
             return self.HANDLE_TL
         if QRectF(cr.right() - hs, cr.top() - hs, 2 * hs, 2 * hs).contains(pos):
@@ -121,7 +120,6 @@ class CropOverlayItem(QGraphicsItem):
         if QRectF(cr.right() - hs, cr.bottom() - hs, 2 * hs, 2 * hs).contains(pos):
             return self.HANDLE_BR
 
-        # Edge handles
         if QRectF(cr.left() - hs, cr.center().y() - hs, 2 * hs, 2 * hs).contains(pos):
             return self.HANDLE_L
         if QRectF(cr.right() - hs, cr.center().y() - hs, 2 * hs, 2 * hs).contains(pos):
@@ -131,7 +129,6 @@ class CropOverlayItem(QGraphicsItem):
         if QRectF(cr.center().x() - hs, cr.bottom() - hs, 2 * hs, 2 * hs).contains(pos):
             return self.HANDLE_B
 
-        # Inside crop rect (move)
         if cr.contains(pos):
             return self.HANDLE_MOVE
 
@@ -143,18 +140,15 @@ class CropOverlayItem(QGraphicsItem):
 
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
 
-        # 1. Darkened Dimmed Mask Outside Crop Rect
         mask_path = QPainterPath()
         mask_path.addRect(self._image_rect)
         mask_path.addRect(self._crop_rect)
         painter.fillPath(mask_path, QBrush(QColor(0, 0, 0, 160)))
 
-        # 2. Main Crop Rect Border
         cr = self._crop_rect
         painter.setPen(QPen(QColor("#ffffff"), 1.5, Qt.PenStyle.SolidLine))
         painter.drawRect(cr)
 
-        # 3. Rule of Thirds Grid
         grid_pen = QPen(QColor(255, 255, 255, 90), 1, Qt.PenStyle.DashLine)
         painter.setPen(grid_pen)
         for i in range(1, 3):
@@ -163,24 +157,19 @@ class CropOverlayItem(QGraphicsItem):
             painter.drawLine(QPointF(gx, cr.top()), QPointF(gx, cr.bottom()))
             painter.drawLine(QPointF(cr.left(), gy), QPointF(cr.right(), gy))
 
-        # 4. Corner Bracket Handles
         bracket_len = 16.0
         bracket_pen = QPen(QColor("#ffffff"), 3.0, Qt.PenStyle.SolidLine)
         painter.setPen(bracket_pen)
 
-        # Top-Left
         painter.drawLine(QPointF(cr.left(), cr.top()), QPointF(cr.left() + bracket_len, cr.top()))
         painter.drawLine(QPointF(cr.left(), cr.top()), QPointF(cr.left(), cr.top() + bracket_len))
 
-        # Top-Right
         painter.drawLine(QPointF(cr.right(), cr.top()), QPointF(cr.right() - bracket_len, cr.top()))
         painter.drawLine(QPointF(cr.right(), cr.top()), QPointF(cr.right(), cr.top() + bracket_len))
 
-        # Bottom-Left
         painter.drawLine(QPointF(cr.left(), cr.bottom()), QPointF(cr.left() + bracket_len, cr.bottom()))
         painter.drawLine(QPointF(cr.left(), cr.bottom()), QPointF(cr.left(), cr.bottom() - bracket_len))
 
-        # Bottom-Right
         painter.drawLine(QPointF(cr.right(), cr.bottom()), QPointF(cr.right() - bracket_len, cr.bottom()))
         painter.drawLine(QPointF(cr.right(), cr.bottom()), QPointF(cr.right(), cr.bottom() - bracket_len))
 
@@ -221,7 +210,6 @@ class CropOverlayItem(QGraphicsItem):
             new_cr.translate(delta.x(), delta.y())
 
         elif self._aspect_ratio is None:
-            # Freeform resizing
             if self._active_handle in (self.HANDLE_L, self.HANDLE_TL, self.HANDLE_BL):
                 new_cr.setLeft(min(orig.right() - 30, orig.left() + delta.x()))
             if self._active_handle in (self.HANDLE_R, self.HANDLE_TR, self.HANDLE_BR):
@@ -231,7 +219,6 @@ class CropOverlayItem(QGraphicsItem):
             if self._active_handle in (self.HANDLE_B, self.HANDLE_BL, self.HANDLE_BR):
                 new_cr.setBottom(max(orig.top() + 30, orig.bottom() + delta.y()))
         else:
-            # Aspect-constrained resizing
             ratio = self._aspect_ratio
             if self._active_handle in (self.HANDLE_BR, self.HANDLE_R, self.HANDLE_B):
                 new_w = max(40.0, orig.width() + delta.x())

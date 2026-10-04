@@ -14,13 +14,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Raw Photo Editor")
         self.resize(1200, 800)
 
-        # Core Components
         self.engine = ImageEngine()
         self.activity_bar = ActivityBar(self)
         self.canvas = ImageCanvas(self)
         self.sidebar = Sidebar(self)
 
-        # Controller (Business Logic & State Management)
         self.controller = EditorController(self.engine, self.canvas, self.sidebar, parent=self)
 
         self._init_menu()
@@ -58,19 +56,14 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(10, 10, 0, 10)
         main_layout.setSpacing(10)
 
-        # 1. Main Viewport Canvas (Left)
         main_layout.addWidget(self.canvas, stretch=4)
 
-        # 2. Stacked Sidebar Panel (Middle-Right)
         main_layout.addWidget(self.sidebar, stretch=1)
 
-        # 3. Activity Bar (Rightmost)
         main_layout.addWidget(self.activity_bar)
 
-        # Connect tab switching
         self.activity_bar.tabChanged.connect(self.sidebar.set_current_tab)
 
-        # Switch tabs via activity bar through controller
         self.activity_bar.tabChanged.connect(self.controller.set_workspace_tab)
 
     def _on_import(self) -> None:

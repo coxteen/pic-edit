@@ -16,12 +16,10 @@ def _monotone_cubic_spline(x_pts: np.ndarray, y_pts: np.ndarray, x_eval: np.ndar
     if n == 2:
         return np.interp(x_eval, x_pts, y_pts)
 
-    # 1. Calculate secants (slopes of secant lines)
     dx = np.diff(x_pts)
     dy = np.diff(y_pts)
     slopes = dy / dx
 
-    # 2. Calculate tangents at control points
     tangents = np.zeros(n, dtype=np.float32)
     tangents[0] = slopes[0]
     tangents[-1] = slopes[-1]
@@ -30,13 +28,10 @@ def _monotone_cubic_spline(x_pts: np.ndarray, y_pts: np.ndarray, x_eval: np.ndar
         if slopes[i - 1] * slopes[i] <= 0:
             tangents[i] = 0.0
         else:
-            # Weighted harmonic mean (PCHIP tangent)
             w1 = 2 * dx[i] + dx[i - 1]
             w2 = dx[i] + 2 * dx[i - 1]
             tangents[i] = (w1 + w2) / (w1 / slopes[i - 1] + w2 / slopes[i])
 
-    # 3. Evaluate Hermite cubic basis polynomials
-    # Find segment index for each x in x_eval
     idx = np.searchsorted(x_pts, x_eval) - 1
     idx = np.clip(idx, 0, n - 2)
 
@@ -50,7 +45,6 @@ def _monotone_cubic_spline(x_pts: np.ndarray, y_pts: np.ndarray, x_eval: np.ndar
     h = x1 - x0
     t = (x_eval - x0) / h
 
-    # Hermite basis functions
     h00 = 2 * (t ** 3) - 3 * (t ** 2) + 1
     h10 = (t ** 3) - 2 * (t ** 2) + t
     h01 = -2 * (t ** 3) + 3 * (t ** 2)
@@ -79,7 +73,6 @@ def interpolate_curve_points(
     x_pts = np.array([p[0] * 255.0 for p in sorted_pts], dtype=np.float32)
     y_pts = np.array([p[1] * 255.0 for p in sorted_pts], dtype=np.float32)
 
-    # Ensure endpoints at 0 and 255
     if x_pts[0] > 0:
         x_pts = np.insert(x_pts, 0, 0.0)
         y_pts = np.insert(y_pts, 0, y_pts[0])

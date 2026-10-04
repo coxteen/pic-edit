@@ -14,7 +14,6 @@ class ColorSection(BaseSection):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        # Temperature Slider: Blue -> Amber gradient
         self.temp_slider = LabeledSlider(
             name="Temperature",
             min_val=-100.0,
@@ -28,7 +27,6 @@ class ColorSection(BaseSection):
         self.temp_slider.valueChanged.connect(lambda _: self.adjustmentsChanged.emit())
         self.add_widget(self.temp_slider)
 
-        # Tint Slider: Green -> Magenta gradient
         self.tint_slider = LabeledSlider(
             name="Tint",
             min_val=-100.0,

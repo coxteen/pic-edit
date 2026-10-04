@@ -79,7 +79,6 @@ class ImageEngine:
             if f is not None:
                 full_res_image = f.apply(full_res_image)
 
-        # Convert RGB to BGR for OpenCV export
         bgr_output = cv2.cvtColor(full_res_image, cv2.COLOR_RGB2BGR)
 
         os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)

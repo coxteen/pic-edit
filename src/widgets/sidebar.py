@@ -28,7 +28,6 @@ class Sidebar(QWidget):
 
         self.stack = QStackedWidget(self)
 
-        # --- Tab 0: Develop Panel (General + Color + Curves) ---
         develop_scroll = QScrollArea(self)
         develop_scroll.setWidgetResizable(True)
         develop_scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -56,7 +55,6 @@ class Sidebar(QWidget):
         develop_scroll.setWidget(develop_container)
         self.stack.addWidget(develop_scroll)
 
-        # --- Tab 1: Crop Panel ---
         crop_scroll = QScrollArea(self)
         crop_scroll.setWidgetResizable(True)
         crop_scroll.setFrameShape(QFrame.Shape.NoFrame)

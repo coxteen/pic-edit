@@ -44,7 +44,7 @@ class AspectRatioButton(QPushButton):
 class CropSection(BaseSection):
     """Collapsible section housing Aspect Ratio, Straighten, and Orientation controls."""
 
-    aspectRatioChanged = Signal(object)  # Emits Optional[float]
+    aspectRatioChanged = Signal(object) 
 
     def __init__(self, parent: Optional[QWidget] = None):
         self._discrete_rot = 0
@@ -58,7 +58,6 @@ class CropSection(BaseSection):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        # 1. Aspect Ratio
         ar_title = QLabel("ASPECT RATIO", self)
         ar_title.setStyleSheet("color: #888888; font-size: 10px; font-weight: bold; margin-top: 4px;")
         self.add_widget(ar_title)
@@ -91,7 +90,6 @@ class CropSection(BaseSection):
         self._selected_btn = self.ar_buttons[0]
         self.add_widget(grid_widget)
 
-        # 2. Rotation Slider
         rot_title = QLabel("STRAIGHTEN & ROTATION", self)
         rot_title.setStyleSheet("color: #888888; font-size: 10px; font-weight: bold; margin-top: 10px;")
         self.add_widget(rot_title)
@@ -108,7 +106,6 @@ class CropSection(BaseSection):
         self.rotation_slider.valueChanged.connect(lambda _: self.adjustmentsChanged.emit())
         self.add_widget(self.rotation_slider)
 
-        # 3. Orientation Tools
         orient_title = QLabel("ORIENTATION", self)
         orient_title.setStyleSheet("color: #888888; font-size: 10px; font-weight: bold; margin-top: 10px;")
         self.add_widget(orient_title)
@@ -253,8 +250,6 @@ class CropSection(BaseSection):
         if not self.has_modifications():
             return None
 
-        # When active inside the crop workspace, do not slice the buffer so the user can see the full image.
-        # When outside the crop workspace (Develop tab or Export), apply the physical crop slice.
         effective_crop = None if getattr(self, "_is_active_workspace", False) else self._crop_rect
 
         return GeometryFilter(

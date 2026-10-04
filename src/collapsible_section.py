@@ -14,18 +14,15 @@ class CollapsibleSection(QWidget):
         self._title = title
         self._on_reset = on_reset
 
-        # Main layout for this accordion block
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
 
-        # Header Container
         header_container = QWidget(self)
         header_layout = QHBoxLayout(header_container)
         header_layout.setContentsMargins(0, 0, 0, 0)
         header_layout.setSpacing(4)
 
-        # Header Toggle Button
         self.toggle_button = QPushButton(f"▼  {self._title}", self)
         self.toggle_button.setStyleSheet("""
             QPushButton {
@@ -45,7 +42,6 @@ class CollapsibleSection(QWidget):
         self.toggle_button.clicked.connect(self.toggle)
         header_layout.addWidget(self.toggle_button, stretch=1)
 
-        # Optional Reset Button in the header
         if self._on_reset is not None:
             self.reset_button = QPushButton("Reset", self)
             self.reset_button.setFixedWidth(55)
@@ -76,7 +72,6 @@ class CollapsibleSection(QWidget):
 
         self.main_layout.addWidget(header_container)
 
-        # Container for the child controls
         self.content_widget = QWidget(self)
         self.content_layout = QVBoxLayout(self.content_widget)
         self.content_layout.setContentsMargins(8, 12, 8, 12)

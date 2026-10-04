@@ -27,7 +27,7 @@ class LabeledSlider(QWidget):
         self.min_val = min_val
         self.max_val = max_val
         self.default_val = float(default_val)
-        self._default_float = float(default_val)  # Alias for general_section compatibility
+        self._default_float = float(default_val) 
         self.scale = scale
         self.formatter = formatter or (lambda v: f"{v:+.1f}" if v != 0 else "0.0")
         self.track_colors = track_colors
@@ -39,7 +39,6 @@ class LabeledSlider(QWidget):
         layout.setContentsMargins(0, 2, 0, 2)
         layout.setSpacing(2)
 
-        # Header Row: Label name and numeric readout
         header_layout = QHBoxLayout()
         header_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -54,7 +53,6 @@ class LabeledSlider(QWidget):
         header_layout.addWidget(self.label_value)
         layout.addLayout(header_layout)
 
-        # Slider Setup
         self.slider = QSlider(Qt.Orientation.Horizontal, self)
         self.slider.setRange(int(round(self.min_val * self.scale)), int(round(self.max_val * self.scale)))
         self.slider.setValue(int(round(self.default_val * self.scale)))

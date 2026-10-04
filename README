@@ -10,6 +10,10 @@
 
 </div>
 
+<p align="center">
+  <img src="./assets/demo.gif" alt="Pic Edit interactive demo" width="850">
+</p>
+
 ---
 
 ## 📌 Problem & Motivation
@@ -123,4 +127,4 @@ PicEdit does not currently use a separate configuration file or environment vari
 ## 📄 License & Author
 
 - **Author:** [Costin Ghiujan](https://github.com/coxteen)
-- **License:** Released unde the [MIT License](LICENSE)
+- **License:** Released unde the [MIT License](LICENSE).
